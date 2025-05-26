@@ -5,9 +5,14 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Option;
 
+import hexlet.code.Parser;
+
+import java.util.Map;
+import java.util.concurrent.Callable;
+
 @Command(name = "gendiff", mixinStandardHelpOptions = true, version = "gendiff 1.0",
         description = "Compares two configuration files and shows a difference.")
-public class App implements Runnable {
+public class App implements Callable<String> {
 
     @Parameters(index = "0", paramLabel = "filepath1", description = "path to first file")
     private String filepath1;
@@ -19,12 +24,18 @@ public class App implements Runnable {
     private String format = "stylish";
 
     @Override
-    public void run() {
-        System.out.println("Hello World!");
+    public String call() {
+        try {
+            Map<String, Object> data1 = (Map<String, Object>) Parser.parse(filepath1);
+            Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
+            return Differ.generate(data1, data2);
+        } catch (Exception e) {
+            return "Ошибка: " + e.getMessage();
+        }
     }
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new App()).execute(args);
-        System.exit(exitCode);
+        String result = CommandLine.call(new App(), args);
+        System.out.println(result);
     }
 }

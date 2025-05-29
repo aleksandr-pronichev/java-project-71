@@ -2,6 +2,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
     application
     checkstyle
+    id("org.sonarqube") version "6.2.0.5505"
 }
 
 group = "hexlet.code"
@@ -29,4 +30,12 @@ tasks.test {
 checkstyle {
     toolVersion = "10.24.0"
     configFile = file("config/checkstyle/checkstyle.xml")
+}
+
+sonar {
+    properties {
+        property("sonar.projectKey", "aleksandr-pronichev_java-project-71")
+        property("sonar.organization", "aleksandr-pronichev")
+        property("sonar.host.url", "https://sonarcloud.io")
+    }
 }

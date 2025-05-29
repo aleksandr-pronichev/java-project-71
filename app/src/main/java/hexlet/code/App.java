@@ -5,8 +5,6 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Option;
 
-import hexlet.code.Parser;
-
 import java.util.Map;
 import java.util.concurrent.Callable;
 

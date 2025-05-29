@@ -42,5 +42,7 @@ sonar {
         property("sonar.projectKey", "aleksandr-pronichev_java-project-71")
         property("sonar.organization", "aleksandr-pronichev")
         property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.coverage.jacoco.xmlReportPaths", layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml").get().asFile.path)
+
     }
 }

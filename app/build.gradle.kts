@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("com.github.ben-manes.versions") version "0.52.0"
     application
@@ -26,11 +29,13 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-    finalizedBy(tasks.jacocoTestReport)
+    testLogging {
+        exceptionFormat = TestExceptionFormat.FULL
+        events = setOf(TestLogEvent.FAILED, TestLogEvent.PASSED, TestLogEvent.SKIPPED)
+        showStandardStreams = true
+    }
 }
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-}
+tasks.jacocoTestReport { reports { xml.required.set(true) } }
 
 checkstyle {
     toolVersion = "10.24.0"

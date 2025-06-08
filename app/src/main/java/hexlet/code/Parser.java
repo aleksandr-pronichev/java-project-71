@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.util.Map;
 import java.nio.file.Files;
@@ -14,8 +15,10 @@ public class Parser {
         String content = Files.readString(writeFilePath);
 
         if (path.endsWith(".json")) {
-            var result = new ObjectMapper().readValue(content, Map.class);
-            return result;
+            return new ObjectMapper().readValue(content, Map.class);
+        } else if (path.endsWith(".yaml") || path.endsWith(".yml")){
+            ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+            return yamlMapper.readValue(content, Map.class);
         } else {
             throw new Exception("Unsupported file format: " + path);
         }

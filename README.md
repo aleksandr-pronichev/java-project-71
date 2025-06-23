@@ -4,3 +4,4 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=aleksandr-pronichev_java-project-71&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=aleksandr-pronichev_java-project-71)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=aleksandr-pronichev_java-project-71&metric=coverage)](https://sonarcloud.io/summary/new_code?id=aleksandr-pronichev_java-project-71)
 [![asciicast](https://asciinema.org/a/4PAX9Vin0L2b8rT0uqIMkSk2x.svg)](https://asciinema.org/a/4PAX9Vin0L2b8rT0uqIMkSk2x)
+[![asciicast](https://asciinema.org/a/jZrKll7rqF1gJQHYt3otIqA3U.svg)](https://asciinema.org/a/jZrKll7rqF1gJQHYt3otIqA3U)

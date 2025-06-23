@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import hexlet.code.formatters.JsonFormatter;
 import hexlet.code.formatters.StylishFormatter;
 import hexlet.code.formatters.PlainFormatter;
 
@@ -10,6 +11,7 @@ public class Formatter {
         return switch (format) {
             case "plain" -> PlainFormatter.format(data1, data2);
             case "stylish" -> StylishFormatter.format(data1, data2);
+            case "json" -> JsonFormatter.format(data1, data2);
             default -> throw new IllegalArgumentException("Unknown format: " + format);
         };
     }

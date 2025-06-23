@@ -1,5 +1,6 @@
 package hexlet.code;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -143,5 +144,35 @@ public class DifferTest {
             """;
         String actual = Differ.generate(data1, data2, "plain");
         assertEquals(expected.trim(), actual.trim());
+    }
+
+    @Test
+    void testJsonFormatterSimple() throws Exception {
+        Map<String, Object> data1 = Map.of(
+                "host", "hexlet.io",
+                "timeout", 50,
+                "proxy", "123.234.53.22",
+                "follow", false
+        );
+        Map<String, Object> data2 = Map.of(
+                "timeout", 20,
+                "verbose", true,
+                "host", "hexlet.io"
+        );
+
+        String actualJson = hexlet.code.formatters.JsonFormatter.format(data1, data2);
+
+        ObjectMapper mapper = new ObjectMapper();
+        Map<String, Object> actualMap = mapper.readValue(actualJson, Map.class);
+
+        Map<String, Object> expectedMap = Map.of(
+                "follow", Map.of("status", "removed", "value", false),
+                "host", Map.of("status", "unchanged", "value", "hexlet.io"),
+                "proxy", Map.of("status", "removed", "value", "123.234.53.22"),
+                "timeout", Map.of("status", "updated", "oldValue", 50, "newValue", 20),
+                "verbose", Map.of("status", "added", "value", true)
+        );
+
+        assertEquals(expectedMap, actualMap);
     }
 }

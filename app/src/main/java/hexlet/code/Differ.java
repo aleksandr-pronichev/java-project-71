@@ -13,4 +13,8 @@ public class Differ {
         Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
         return generate(data1, data2, format);
     }
+
+    public static String generate(String filePath1, String filePath2) throws Exception {
+        return generate(filePath1, filePath2, "stylish");
+    }
 }

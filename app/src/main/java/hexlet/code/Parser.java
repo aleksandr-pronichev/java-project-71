@@ -16,7 +16,7 @@ public class Parser {
 
         if (path.endsWith(".json")) {
             return new ObjectMapper().readValue(content, Map.class);
-        } else if (path.endsWith(".yaml") || path.endsWith(".yml")){
+        } else if (path.endsWith(".yaml") || path.endsWith(".yml")) {
             ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
             return yamlMapper.readValue(content, Map.class);
         } else {

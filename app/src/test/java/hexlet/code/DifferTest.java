@@ -7,10 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DifferTest {
 
+    private static final int KEY2_VALUE = 42;
+    private static final int ADDED_VALUE = 100;
+    private static final int TIMEOUT_1 = 50;
+    private static final int TIMEOUT_2 = 20;
+
     @Test
     public void testEqualFlatJson() {
-        Map<String, Object> data1 = Map.of("key1", "value1", "key2", 42);
-        Map<String, Object> data2 = Map.of("key1", "value1", "key2", 42);
+        Map<String, Object> data1 = Map.of("key1", "value1", "key2", KEY2_VALUE);
+        Map<String, Object> data2 = Map.of("key1", "value1", "key2", KEY2_VALUE);
 
         String expected = """
                 {
@@ -25,7 +30,7 @@ public class DifferTest {
     @Test
     public void testAddedKey() {
         Map<String, Object> data1 = Map.of("key1", "value1");
-        Map<String, Object> data2 = Map.of("key1", "value1", "key2", 100);
+        Map<String, Object> data2 = Map.of("key1", "value1", "key2", ADDED_VALUE);
 
         String expected = """
                 {
@@ -39,7 +44,7 @@ public class DifferTest {
 
     @Test
     public void testRemovedKey() {
-        Map<String, Object> data1 = Map.of("key1", "value1", "key2", 100);
+        Map<String, Object> data1 = Map.of("key1", "value1", "key2", ADDED_VALUE);
         Map<String, Object> data2 = Map.of("key1", "value1");
 
         String expected = """
@@ -69,8 +74,8 @@ public class DifferTest {
 
     @Test
     public void testMultipleChanges() {
-        Map<String, Object> data1 = Map.of("host", "hexlet.io", "timeout", 50);
-        Map<String, Object> data2 = Map.of("timeout", 20, "verbose", true, "host", "hexlet.io");
+        Map<String, Object> data1 = Map.of("host", "hexlet.io", "timeout", TIMEOUT_1);
+        Map<String, Object> data2 = Map.of("timeout", TIMEOUT_2, "verbose", true, "host", "hexlet.io");
 
         String expected = """
                 {
@@ -150,12 +155,12 @@ public class DifferTest {
     void testJsonFormatterSimple() throws Exception {
         Map<String, Object> data1 = Map.of(
                 "host", "hexlet.io",
-                "timeout", 50,
+                "timeout", TIMEOUT_1,
                 "proxy", "123.234.53.22",
                 "follow", false
         );
         Map<String, Object> data2 = Map.of(
-                "timeout", 20,
+                "timeout", TIMEOUT_2,
                 "verbose", true,
                 "host", "hexlet.io"
         );
@@ -169,7 +174,7 @@ public class DifferTest {
                 "follow", Map.of("status", "removed", "value", false),
                 "host", Map.of("status", "unchanged", "value", "hexlet.io"),
                 "proxy", Map.of("status", "removed", "value", "123.234.53.22"),
-                "timeout", Map.of("status", "updated", "oldValue", 50, "newValue", 20),
+                "timeout", Map.of("status", "updated", "oldValue", TIMEOUT_1, "newValue", TIMEOUT_2),
                 "verbose", Map.of("status", "added", "value", true)
         );
 

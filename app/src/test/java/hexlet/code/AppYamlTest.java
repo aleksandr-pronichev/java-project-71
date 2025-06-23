@@ -10,8 +10,8 @@ public class AppYamlTest {
 
     @Test
     public void testFlatYamlDiff() throws Exception {
-        String path1 = "src/test/resources/file1.yml";
-        String path2 = "src/test/resources/file2.yml";
+        String path1 = "src/test/resources/file1.yaml";
+        String path2 = "src/test/resources/file2.yaml";
 
         String expected = """
             {

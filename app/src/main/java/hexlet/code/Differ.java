@@ -13,7 +13,6 @@ public class Differ {
         Set<String> allKeys = new TreeSet<>();
         allKeys.addAll(data1.keySet());
         allKeys.addAll(data2.keySet());
-
         List<String> lines = new ArrayList<>();
         for (String key : allKeys) {
             Object value1 = data1.get(key);

@@ -36,4 +36,10 @@ public class App implements Callable<String> {
         String result = CommandLine.call(new App(), args);
         System.out.println(result);
     }
+
+    public static String generateDiff(String path1, String path2) throws Exception {
+        Map<String, Object> data1 = (Map<String, Object>) Parser.parse(path1);
+        Map<String, Object> data2 = (Map<String, Object>) Parser.parse(path2);
+        return Differ.generate(data1, data2);
+    }
 }

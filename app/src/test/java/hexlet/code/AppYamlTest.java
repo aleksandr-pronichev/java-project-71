@@ -20,7 +20,7 @@ public class AppYamlTest {
               + verbose: true
             }""";
 
-        String result = App.generateDiff(path1, path2);
+        String result = App.generateDiff(path1, path2, "stylish");
         assertEquals(expected.strip(), result.strip());
     }
 }

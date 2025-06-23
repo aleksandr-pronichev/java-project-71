@@ -17,7 +17,7 @@ public class DifferTest {
                     key2: 42
                 }""";
 
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -32,7 +32,7 @@ public class DifferTest {
                   + key2: 100
                 }""";
 
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -47,7 +47,7 @@ public class DifferTest {
                   - key2: 100
                 }""";
 
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -62,7 +62,7 @@ public class DifferTest {
                   + key1: new
                 }""";
 
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -79,7 +79,7 @@ public class DifferTest {
                   + verbose: true
                 }""";
 
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -116,7 +116,32 @@ public class DifferTest {
       + setting3: none
     }
     """;
-        String actual = Differ.generate(data1, data2);
+        String actual = Differ.generate(data1, data2, "stylish");
+        assertEquals(expected.trim(), actual.trim());
+    }
+
+    @Test
+    void testPlainFormatter() throws Exception {
+        String filepath1 = "src/test/resources/nested1.json";
+        String filepath2 = "src/test/resources/nested2.json";
+        Map<String, Object> data1 = (Map<String, Object>) Parser.parse(filepath1);
+        Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
+        String expected = """
+        Property 'chars2' was updated. From [complex value] to false
+        Property 'checked' was updated. From false to true
+        Property 'default' was updated. From null to [complex value]
+        Property 'id' was updated. From 45 to null
+        Property 'key1' was removed
+        Property 'key2' was added with value: 'value2'
+        Property 'numbers2' was updated. From [complex value] to [complex value]
+        Property 'numbers3' was removed
+        Property 'numbers4' was added with value: [complex value]
+        Property 'obj1' was added with value: [complex value]
+        Property 'setting1' was updated. From 'Some value' to 'Another value'
+        Property 'setting2' was updated. From 200 to 300
+        Property 'setting3' was updated. From true to 'none'
+        """;
+        String actual = Differ.generate(data1, data2, "plain");
         assertEquals(expected.trim(), actual.trim());
     }
 }

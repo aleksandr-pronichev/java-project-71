@@ -26,7 +26,7 @@ public class App implements Callable<String> {
         try {
             Map<String, Object> data1 = (Map<String, Object>) Parser.parse(filepath1);
             Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
-            return Differ.generate(data1, data2);
+            return Differ.generate(data1, data2, format);
         } catch (Exception e) {
             return "Ошибка: " + e.getMessage();
         }
@@ -37,9 +37,9 @@ public class App implements Callable<String> {
         System.out.println(result);
     }
 
-    public static String generateDiff(String path1, String path2) throws Exception {
+    public static String generateDiff(String path1, String path2, String format) throws Exception {
         Map<String, Object> data1 = (Map<String, Object>) Parser.parse(path1);
         Map<String, Object> data2 = (Map<String, Object>) Parser.parse(path2);
-        return Differ.generate(data1, data2);
+        return Differ.generate(data1, data2, format);
     }
 }

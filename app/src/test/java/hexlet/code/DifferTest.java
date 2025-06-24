@@ -1,9 +1,12 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.formatters.StylishFormatter;
 import org.junit.jupiter.api.Test;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class DifferTest {
 
@@ -17,13 +20,14 @@ public class DifferTest {
         Map<String, Object> data1 = Map.of("key1", "value1", "key2", KEY2_VALUE);
         Map<String, Object> data2 = Map.of("key1", "value1", "key2", KEY2_VALUE);
 
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
         String expected = """
                 {
                     key1: value1
                     key2: 42
                 }""";
 
-        String actual = Differ.generate(data1, data2, "stylish");
+        String actual = StylishFormatter.format(diff);
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -32,13 +36,14 @@ public class DifferTest {
         Map<String, Object> data1 = Map.of("key1", "value1");
         Map<String, Object> data2 = Map.of("key1", "value1", "key2", ADDED_VALUE);
 
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
         String expected = """
                 {
                     key1: value1
                   + key2: 100
                 }""";
 
-        String actual = Differ.generate(data1, data2, "stylish");
+        String actual = StylishFormatter.format(diff);
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -47,13 +52,14 @@ public class DifferTest {
         Map<String, Object> data1 = Map.of("key1", "value1", "key2", ADDED_VALUE);
         Map<String, Object> data2 = Map.of("key1", "value1");
 
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
         String expected = """
                 {
                     key1: value1
                   - key2: 100
                 }""";
 
-        String actual = Differ.generate(data1, data2, "stylish");
+        String actual = StylishFormatter.format(diff);
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -62,13 +68,14 @@ public class DifferTest {
         Map<String, Object> data1 = Map.of("key1", "old");
         Map<String, Object> data2 = Map.of("key1", "new");
 
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
         String expected = """
                 {
                   - key1: old
                   + key1: new
                 }""";
 
-        String actual = Differ.generate(data1, data2, "stylish");
+        String actual = StylishFormatter.format(diff);
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -85,7 +92,8 @@ public class DifferTest {
                   + verbose: true
                 }""";
 
-        String actual = Differ.generate(data1, data2, "stylish");
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
+        String actual = StylishFormatter.format(diff);
         assertEquals(expected.strip(), actual.strip());
     }
 
@@ -93,8 +101,8 @@ public class DifferTest {
     void testJsonNestedStylish() throws Exception {
         String filepath1 = "src/test/resources/nested1.json";
         String filepath2 = "src/test/resources/nested2.json";
-        Map<String, Object> data1 = (Map<String, Object>) Parser.parse(filepath1);
-        Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
+        Map<String, Object> data1 = parseFile(filepath1);
+        Map<String, Object> data2 = parseFile(filepath2);
         String expected = """
             {
                 chars1: [a, b, c]
@@ -122,7 +130,7 @@ public class DifferTest {
               + setting3: none
             }
             """;
-        String actual = Differ.generate(data1, data2, "stylish");
+        String actual = Differ.generate(filepath1, filepath2, "stylish");
         assertEquals(expected.trim(), actual.trim());
     }
 
@@ -130,8 +138,8 @@ public class DifferTest {
     void testPlainFormatter() throws Exception {
         String filepath1 = "src/test/resources/nested1.json";
         String filepath2 = "src/test/resources/nested2.json";
-        Map<String, Object> data1 = (Map<String, Object>) Parser.parse(filepath1);
-        Map<String, Object> data2 = (Map<String, Object>) Parser.parse(filepath2);
+        Map<String, Object> data1 = parseFile(filepath1);
+        Map<String, Object> data2 = parseFile(filepath2);
         String expected = """
             Property 'chars2' was updated. From [complex value] to false
             Property 'checked' was updated. From false to true
@@ -147,7 +155,7 @@ public class DifferTest {
             Property 'setting2' was updated. From 200 to 300
             Property 'setting3' was updated. From true to 'none'
             """;
-        String actual = Differ.generate(data1, data2, "plain");
+        String actual = Differ.generate(filepath1, filepath2, "stylish");
         assertEquals(expected.trim(), actual.trim());
     }
 
@@ -165,7 +173,8 @@ public class DifferTest {
                 "host", "hexlet.io"
         );
 
-        String actualJson = hexlet.code.formatters.JsonFormatter.format(data1, data2);
+        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
+        String actualJson = hexlet.code.formatters.JsonFormatter.format(diff);
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, Object> actualMap = mapper.readValue(actualJson, Map.class);
@@ -179,5 +188,11 @@ public class DifferTest {
         );
 
         assertEquals(expectedMap, actualMap);
+    }
+
+    private Map<String, Object> parseFile(String path) throws Exception {
+        String content = Files.readString(Paths.get(path));
+        String format = path.endsWith(".json") ? "json" : "yaml";
+        return Parser.parse(content, format);
     }
 }

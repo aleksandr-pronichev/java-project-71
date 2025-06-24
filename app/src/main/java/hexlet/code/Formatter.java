@@ -7,11 +7,11 @@ import hexlet.code.formatters.PlainFormatter;
 import java.util.Map;
 
 public class Formatter {
-    public static String format(String format, Map<String, Object> data1, Map<String, Object> data2) {
+    public static String format(String format, Map<String, Map<String, Object>> diff) {
         return switch (format) {
-            case "plain" -> PlainFormatter.format(data1, data2);
-            case "stylish" -> StylishFormatter.format(data1, data2);
-            case "json" -> JsonFormatter.format(data1, data2);
+            case "plain" -> PlainFormatter.format(diff);
+            case "stylish" -> StylishFormatter.format(diff);
+            case "json" -> JsonFormatter.format(diff);
             default -> throw new IllegalArgumentException("Unknown format: " + format);
         };
     }

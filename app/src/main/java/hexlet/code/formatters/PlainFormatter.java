@@ -3,30 +3,23 @@ package hexlet.code.formatters;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class PlainFormatter {
-    public static String format(Map<String, Object> data1, Map<String, Object> data2) {
-        Set<String> allKeys = new TreeSet<>();
-        allKeys.addAll(data1.keySet());
-        allKeys.addAll(data2.keySet());
+    public static String format(Map<String, Map<String, Object>> diff) {
         List<String> lines = new ArrayList<>();
 
-        for (String key : allKeys) {
-            Object value1 = data1.get(key);
-            Object value2 = data2.get(key);
+        for (Map.Entry<String, Map<String, Object>> entry : diff.entrySet()) {
+            String key = entry.getKey();
+            Map<String, Object> meta = entry.getValue();
+            String status = (String) meta.get("status");
 
-            boolean inFirst = data1.containsKey(key);
-            boolean inSecond = data2.containsKey(key);
+            switch (status) {
+                case "added" -> lines.add("Property '" + key + "' was added with value: " + stringify(meta.get("value")));
+                case "removed" -> lines.add("Property '" + key + "' was removed");
+                case "updated" -> lines.add("Property '" + key + "' was updated. From " + stringify(meta.get("oldValue")) + " to " + stringify(meta.get("newValue")));
+                default -> {
 
-            if (!inFirst && inSecond) {
-                lines.add("Property '" + key + "' was added with value: " + stringify(value2));
-            } else if (inFirst && !inSecond) {
-                lines.add("Property '" + key + "' was removed");
-            } else if (!Objects.equals(value1, value2)) {
-                lines.add("Property '" + key + "' was updated. From " + stringify(value1) + " to " + stringify(value2));
+                }
             }
         }
         return String.join("\n", lines);

@@ -22,6 +22,9 @@ public class StylishFormatter {
                     lines.add("  - " + key + ": " + stringify(meta.get("oldValue")));
                     lines.add("  + " + key + ": " + stringify(meta.get("newValue")));
                 }
+                default -> {
+
+                }
             }
         }
 

@@ -14,9 +14,11 @@ public class PlainFormatter {
             String status = (String) meta.get("status");
 
             switch (status) {
-                case "added" -> lines.add("Property '" + key + "' was added with value: " + stringify(meta.get("value")));
+                case "added" -> lines.add("Property '" + key + "' was added with value: "
+                        + stringify(meta.get("value")));
                 case "removed" -> lines.add("Property '" + key + "' was removed");
-                case "updated" -> lines.add("Property '" + key + "' was updated. From " + stringify(meta.get("oldValue")) + " to " + stringify(meta.get("newValue")));
+                case "updated" -> lines.add("Property '" + key + "' was updated. From "
+                        + stringify(meta.get("oldValue")) + " to " + stringify(meta.get("newValue")));
                 default -> {
 
                 }

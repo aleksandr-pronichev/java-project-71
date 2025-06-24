@@ -155,7 +155,7 @@ public class DifferTest {
             Property 'setting2' was updated. From 200 to 300
             Property 'setting3' was updated. From true to 'none'
             """;
-        String actual = Differ.generate(filepath1, filepath2, "stylish");
+        String actual = Differ.generate(filepath1, filepath2, "plain");
         assertEquals(expected.trim(), actual.trim());
     }
 

@@ -19,9 +19,8 @@ public class PlainFormatter {
                 case "removed" -> lines.add("Property '" + key + "' was removed");
                 case "updated" -> lines.add("Property '" + key + "' was updated. From "
                         + stringify(meta.get("oldValue")) + " to " + stringify(meta.get("newValue")));
-                default -> {
-
-                }
+                case "unchanged" -> { }
+                default -> throw new RuntimeException("Unknown status: " + status);
             }
         }
         return String.join("\n", lines);

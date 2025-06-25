@@ -10,8 +10,8 @@ public class Differ {
         // 1. Читаем файлы и формат
         String content1 = Files.readString(Paths.get(filepath1));
         String content2 = Files.readString(Paths.get(filepath2));
-        String type1 = getFormatFromPath(filepath1);
-        String type2 = getFormatFromPath(filepath2);
+        String type1 = getDataFormat(filepath1).toLowerCase();
+        String type2 = getDataFormat(filepath2).toLowerCase();
 
         // 2. Парсим данные
         Map<String, Object> data1 = Parser.parse(content1, type1);
@@ -32,13 +32,10 @@ public class Differ {
         return generate(filepath1, filepath2, format);
     }
 
-    private static String getFormatFromPath(String path) {
-        if (path.endsWith(".json")) {
-            return "json";
-        }
-        if (path.endsWith(".yaml") || path.endsWith(".yml")) {
-            return "yaml";
-        }
-        throw new IllegalArgumentException("Unsupported file format: " + path);
+    private static String getDataFormat(String filePath) {
+        int index = filePath.lastIndexOf('.');
+        return index > 0
+                ? filePath.substring(index + 1)
+                : "";
     }
 }

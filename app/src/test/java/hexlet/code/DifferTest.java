@@ -1,8 +1,9 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import hexlet.code.formatters.StylishFormatter;
 import org.junit.jupiter.api.Test;
+
+import java.nio.file.Path;
 import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.file.Files;
@@ -10,189 +11,106 @@ import java.nio.file.Paths;
 
 public class DifferTest {
 
-    private static final int KEY2_VALUE = 42;
-    private static final int ADDED_VALUE = 100;
-    private static final int TIMEOUT_1 = 50;
-    private static final int TIMEOUT_2 = 20;
-
-    @Test
-    public void testEqualFlatJson() {
-        Map<String, Object> data1 = Map.of("key1", "value1", "key2", KEY2_VALUE);
-        Map<String, Object> data2 = Map.of("key1", "value1", "key2", KEY2_VALUE);
-
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String expected = """
-                {
-                    key1: value1
-                    key2: 42
-                }""";
-
-        String actual = StylishFormatter.format(diff);
-        assertEquals(expected.strip(), actual.strip());
+    public static String getNormalizedFileString(String filePath) throws Exception {
+        Path absPath = Paths.get(filePath).toAbsolutePath().normalize();
+        return Files.readString(absPath).trim().replaceAll("\\r", "");
     }
 
+    // json -> stylish
     @Test
-    public void testAddedKey() {
-        Map<String, Object> data1 = Map.of("key1", "value1");
-        Map<String, Object> data2 = Map.of("key1", "value1", "key2", ADDED_VALUE);
+    void testJsonInputStylishOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.json";
+        String file2 = "src/test/resources/input/file2.json";
+        String expected = getNormalizedFileString("src/test/resources/expected/stylish.txt");
 
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String expected = """
-                {
-                    key1: value1
-                  + key2: 100
-                }""";
-
-        String actual = StylishFormatter.format(diff);
-        assertEquals(expected.strip(), actual.strip());
+        String actual = Differ.generate(file1, file2, "stylish");
+        assertEquals(expected, actual);
     }
 
+    // json -> plain
     @Test
-    public void testRemovedKey() {
-        Map<String, Object> data1 = Map.of("key1", "value1", "key2", ADDED_VALUE);
-        Map<String, Object> data2 = Map.of("key1", "value1");
+    void testJsonInputPlainOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.json";
+        String file2 = "src/test/resources/input/file2.json";
+        String expected = getNormalizedFileString("src/test/resources/expected/plain.txt");
 
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String expected = """
-                {
-                    key1: value1
-                  - key2: 100
-                }""";
-
-        String actual = StylishFormatter.format(diff);
-        assertEquals(expected.strip(), actual.strip());
+        String actual = Differ.generate(file1, file2, "plain");
+        assertEquals(expected, actual);
     }
 
+    // json -> json
     @Test
-    public void testChangedValue() {
-        Map<String, Object> data1 = Map.of("key1", "old");
-        Map<String, Object> data2 = Map.of("key1", "new");
+    void testJsonInputJsonOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.json";
+        String file2 = "src/test/resources/input/file2.json";
+        String expected = getNormalizedFileString("src/test/resources/expected/json.txt");
 
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String expected = """
-                {
-                  - key1: old
-                  + key1: new
-                }""";
-
-        String actual = StylishFormatter.format(diff);
-        assertEquals(expected.strip(), actual.strip());
-    }
-
-    @Test
-    public void testMultipleChanges() {
-        Map<String, Object> data1 = Map.of("host", "hexlet.io", "timeout", TIMEOUT_1);
-        Map<String, Object> data2 = Map.of("timeout", TIMEOUT_2, "verbose", true, "host", "hexlet.io");
-
-        String expected = """
-                {
-                    host: hexlet.io
-                  - timeout: 50
-                  + timeout: 20
-                  + verbose: true
-                }""";
-
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String actual = StylishFormatter.format(diff);
-        assertEquals(expected.strip(), actual.strip());
-    }
-
-    @Test
-    void testJsonNestedStylish() throws Exception {
-        String filepath1 = "src/test/resources/nested1.json";
-        String filepath2 = "src/test/resources/nested2.json";
-        Map<String, Object> data1 = parseFile(filepath1);
-        Map<String, Object> data2 = parseFile(filepath2);
-        String expected = """
-            {
-                chars1: [a, b, c]
-              - chars2: [d, e, f]
-              + chars2: false
-              - checked: false
-              + checked: true
-              - default: null
-              + default: [value1, value2]
-              - id: 45
-              + id: null
-              - key1: value1
-              + key2: value2
-                numbers1: [1, 2, 3, 4]
-              - numbers2: [2, 3, 4, 5]
-              + numbers2: [22, 33, 44, 55]
-              - numbers3: [3, 4, 5]
-              + numbers4: [4, 5, 6]
-              + obj1: {nestedKey=value, isNested=true}
-              - setting1: Some value
-              + setting1: Another value
-              - setting2: 200
-              + setting2: 300
-              - setting3: true
-              + setting3: none
-            }
-            """;
-        String actual = Differ.generate(filepath1, filepath2, "stylish");
-        assertEquals(expected.trim(), actual.trim());
-    }
-
-    @Test
-    void testPlainFormatter() throws Exception {
-        String filepath1 = "src/test/resources/nested1.json";
-        String filepath2 = "src/test/resources/nested2.json";
-        Map<String, Object> data1 = parseFile(filepath1);
-        Map<String, Object> data2 = parseFile(filepath2);
-        String expected = """
-            Property 'chars2' was updated. From [complex value] to false
-            Property 'checked' was updated. From false to true
-            Property 'default' was updated. From null to [complex value]
-            Property 'id' was updated. From 45 to null
-            Property 'key1' was removed
-            Property 'key2' was added with value: 'value2'
-            Property 'numbers2' was updated. From [complex value] to [complex value]
-            Property 'numbers3' was removed
-            Property 'numbers4' was added with value: [complex value]
-            Property 'obj1' was added with value: [complex value]
-            Property 'setting1' was updated. From 'Some value' to 'Another value'
-            Property 'setting2' was updated. From 200 to 300
-            Property 'setting3' was updated. From true to 'none'
-            """;
-        String actual = Differ.generate(filepath1, filepath2, "plain");
-        assertEquals(expected.trim(), actual.trim());
-    }
-
-    @Test
-    void testJsonFormatterSimple() throws Exception {
-        Map<String, Object> data1 = Map.of(
-                "host", "hexlet.io",
-                "timeout", TIMEOUT_1,
-                "proxy", "123.234.53.22",
-                "follow", false
-        );
-        Map<String, Object> data2 = Map.of(
-                "timeout", TIMEOUT_2,
-                "verbose", true,
-                "host", "hexlet.io"
-        );
-
-        Map<String, Map<String, Object>> diff = DiffBuilder.build(data1, data2);
-        String actualJson = hexlet.code.formatters.JsonFormatter.format(diff);
+        String actual = Differ.generate(file1, file2, "json");
 
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> actualMap = mapper.readValue(actualJson, Map.class);
-
-        Map<String, Object> expectedMap = Map.of(
-                "follow", Map.of("status", "removed", "value", false),
-                "host", Map.of("status", "unchanged", "value", "hexlet.io"),
-                "proxy", Map.of("status", "removed", "value", "123.234.53.22"),
-                "timeout", Map.of("status", "updated", "oldValue", TIMEOUT_1, "newValue", TIMEOUT_2),
-                "verbose", Map.of("status", "added", "value", true)
-        );
+        var expectedMap = mapper.readValue(expected, Map.class);
+        var actualMap = mapper.readValue(actual, Map.class);
 
         assertEquals(expectedMap, actualMap);
     }
 
-    private Map<String, Object> parseFile(String path) throws Exception {
-        String content = Files.readString(Paths.get(path));
-        String format = path.endsWith(".json") ? "json" : "yaml";
-        return Parser.parse(content, format);
+    // json -> default
+    @Test
+    void testJsonInputDefaultOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.json";
+        String file2 = "src/test/resources/input/file2.json";
+        String expected = getNormalizedFileString("src/test/resources/expected/default.txt");
+
+        String actual = Differ.generate(file1, file2);
+        assertEquals(expected, actual);
+    }
+
+    // yml -> stylish
+    @Test
+    void testYamlInputStylishOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.yaml";
+        String file2 = "src/test/resources/input/file2.yaml";
+        String expected = getNormalizedFileString("src/test/resources/expected/stylish.txt");
+
+        String actual = Differ.generate(file1, file2, "stylish");
+        assertEquals(expected, actual);
+    }
+
+    // yml -> plain
+    @Test
+    void testYamlInputPlainOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.yaml";
+        String file2 = "src/test/resources/input/file2.yaml";
+        String expected = getNormalizedFileString("src/test/resources/expected/plain.txt");
+
+        String actual = Differ.generate(file1, file2, "plain");
+        assertEquals(expected, actual);
+    }
+
+    // yml -> json
+    @Test
+    void testYamlInputJsonOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.yaml";
+        String file2 = "src/test/resources/input/file2.yaml";
+        String expected = getNormalizedFileString("src/test/resources/expected/json.txt");
+
+        String actual = Differ.generate(file1, file2, "json");
+
+        ObjectMapper mapper = new ObjectMapper();
+        var expectedMap = mapper.readValue(expected, Map.class);
+        var actualMap = mapper.readValue(actual, Map.class);
+
+        assertEquals(expectedMap, actualMap);
+    }
+
+    // yml -> default
+    @Test
+    void testYamlInputDefaultOutput() throws Exception {
+        String file1 = "src/test/resources/input/file1.yaml";
+        String file2 = "src/test/resources/input/file2.yaml";
+        String expected = getNormalizedFileString("src/test/resources/expected/default.txt");
+
+        String actual = Differ.generate(file1, file2);
+        assertEquals(expected, actual);
     }
 }

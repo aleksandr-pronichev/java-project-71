@@ -1,6 +1,7 @@
 package hexlet.code;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import hexlet.code.formatters.PlainFormatter;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -111,6 +112,24 @@ public class DifferTest {
         String expected = getNormalizedFileString("src/test/resources/expected/default.txt");
 
         String actual = Differ.generate(file1, file2);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testUnchangedStatusDoesNothing() {
+        Map<String, Object> meta = Map.of("status", "unchanged", "value", "someValue");
+        Map<String, Map<String, Object>> diff = Map.of("someKey", meta);
+
+        String result = PlainFormatter.format(diff);
+        assertEquals("", result.trim());
+    }
+
+    @Test
+    void testJsonNestedStylish() throws Exception {
+        String file1 = "src/test/resources/input/nested1.json";
+        String file2 = "src/test/resources/input/nested2.json";
+        String expected = getNormalizedFileString("src/test/resources/expected/nested_stylish.txt");
+        String actual = Differ.generate(file1, file2, "stylish");
         assertEquals(expected, actual);
     }
 }

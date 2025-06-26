@@ -8,11 +8,11 @@ import java.util.Map;
 public class Parser {
 
     public static Map<String, Object> parse(String data, String format) throws Exception {
-        String fileFormat = format.toLowerCase();
-        if (fileFormat.equals("yml")) {
-            fileFormat = "yaml";
+        String normalizedFormat = format.trim().toLowerCase();
+        if (normalizedFormat.equals("yml")) {
+            normalizedFormat = "yaml";
         }
-        switch (fileFormat) {
+        switch (normalizedFormat) {
             case "json":
                 return parseJson(data);
             case "yaml":
